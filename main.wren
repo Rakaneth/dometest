@@ -1,15 +1,16 @@
 import "graphics" for Canvas, Color
 import "dome" for Window
-import "gfx" for SpriteData, PIXEL_SIZE
-import "bsp" for BSPNode, BSPUtil
+import "./gfx" for SpriteData, PIXEL_SIZE
+import "./bsp" for BSPNode, BSPUtil
 import "input" for Keyboard
 import "math" for M
+import "./actor" for Actor
 
 class Game {
   static init() {
-    var scale = 4
+    __scale = 2
     Canvas.resize(40 * PIXEL_SIZE, 30 * PIXEL_SIZE)
-    Window.resize(Canvas.width * scale, Canvas.height * scale)
+    rescale()
     Window.lockstep = true
     __frame = 0
     var root = BSPNode.new(1, 1, 100, 100)
@@ -18,8 +19,7 @@ class Game {
       Fiber.abort("BSP Failed to split nodes")
     }
     __rooms = []
-    __cx = 0
-    __cy = 0
+    __player = Actor.new("char-person")
 
     root.makeRooms()
 
@@ -31,17 +31,34 @@ class Game {
   }
   static update() {
     if (Keyboard["w"].justPressed) {
-      __cy = __cy - 1
+      __player.moveBy(0, -1)
     }
     if (Keyboard["a"].justPressed) {
-      __cx = __cx - 1
+      __player.moveBy(-1, 0)
     }
     if (Keyboard["s"].justPressed) {
-      __cy = __cy + 1
+      __player.moveBy(0, 1)
     }
     if (Keyboard["d"].justPressed) {
-      __cx = __cx + 1
+      __player.moveBy(1, 0)
     }
+    if (Keyboard.isKeyDown("1")) {
+      __scale = 1
+      rescale()
+    }
+    if (Keyboard.isKeyDown("2")) {
+      __scale = 2
+      rescale()
+    }
+    if (Keyboard.isKeyDown("3")) {
+      __scale = 3
+      rescale()
+    }
+    if (Keyboard.isKeyDown("4")) {
+      __scale = 4
+      rescale()
+    }
+
     //Canvas.offset(__cx, __cy)
   }
   static draw(dt) {
@@ -49,10 +66,14 @@ class Game {
     __mustDraw = false
     for (room in __rooms) {
       SpriteData.drawRoom(room)
-      SpriteData.draw("char-person", __cx, __cy)
+      SpriteData.draw(__player.sprite, __player.x, __player.y)
     }
     SpriteData.drawHealth(4, 20)
-    Canvas.print("Player at %(__cx),%(__cy)", 0, 0, Color.white)
+    Canvas.print("Player at %(__player.x),%(__player.y)", 0, 0, Color.white)
+  }
+
+  static rescale() {
+    Window.resize(Canvas.width * __scale, Canvas.height * __scale)
   }
 
   static spriteTest() {
