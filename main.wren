@@ -11,7 +11,6 @@ class Game {
     Canvas.resize(40 * PIXEL_SIZE, 30 * PIXEL_SIZE)
     Window.resize(Canvas.width * scale, Canvas.height * scale)
     Window.lockstep = true
-    __mustDraw = true
     __frame = 0
     var root = BSPNode.new(1, 1, 100, 100)
     var numNodes = BSPUtil.bspSplit(root)
@@ -33,33 +32,27 @@ class Game {
   static update() {
     if (Keyboard["w"].justPressed) {
       __cy = __cy - 1
-      __mustDraw = true
     }
     if (Keyboard["a"].justPressed) {
       __cx = __cx - 1
-      __mustDraw = true
     }
     if (Keyboard["s"].justPressed) {
       __cy = __cy + 1
-      __mustDraw = true
     }
     if (Keyboard["d"].justPressed) {
       __cx = __cx + 1
-      __mustDraw = true
     }
     //Canvas.offset(__cx, __cy)
   }
   static draw(dt) {
-    if (__mustDraw) {
-      Canvas.cls()
-      __mustDraw = false
-      for (room in __rooms) {
-        SpriteData.drawRoom(room)
-        SpriteData.draw("char-person", __cx, __cy)
-      }
-      SpriteData.drawHealth(4, 20)
-      Canvas.print("Player at %(__cx),%(__cy)", 0, 0, Color.white)
+    Canvas.cls()
+    __mustDraw = false
+    for (room in __rooms) {
+      SpriteData.drawRoom(room)
+      SpriteData.draw("char-person", __cx, __cy)
     }
+    SpriteData.drawHealth(4, 20)
+    Canvas.print("Player at %(__cx),%(__cy)", 0, 0, Color.white)
   }
 
   static spriteTest() {
