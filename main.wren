@@ -6,10 +6,13 @@ import "input" for Keyboard
 import "math" for M
 import "./actor" for Actor
 
+var MAP_W = 40
+var MAP_H = 30
+
 class Game {
   static init() {
     __scale = 2
-    Canvas.resize(40 * PIXEL_SIZE, 30 * PIXEL_SIZE)
+    Canvas.resize(MAP_W * PIXEL_SIZE, MAP_H * PIXEL_SIZE)
     rescale()
     Window.lockstep = true
     __frame = 0
@@ -29,6 +32,16 @@ class Game {
       } 
     }
   }
+
+  static cam(cx, cy) {
+    return [[cx, 100, MAP_W], [cy, 100, MAP_H]].map{|ary|
+      var p = ary[0] 
+      var m = ary[1]
+      var s = ary[2]
+      return M.mid(p - (s/2).floor, 0, M.max(0, m - s))
+    }.toList
+  }
+
   static update() {
     if (Keyboard["w"].justPressed) {
       __player.moveBy(0, -1)
@@ -63,7 +76,9 @@ class Game {
   }
   static draw(dt) {
     Canvas.cls()
-    __mustDraw = false
+    var c = cam(__player.x, __player.y)
+    System.print(c)
+    Canvas.offset(-c[0] * 8, -c[1] * 8)
     for (room in __rooms) {
       SpriteData.drawRoom(room)
       SpriteData.draw(__player.sprite, __player.x, __player.y)
