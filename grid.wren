@@ -32,6 +32,7 @@ class Grid {
 
     width { _width }
     height { _height }
+    items { _items }
 
     inBounds(x, y) {
         if (x < 0 || y < 0) return false
